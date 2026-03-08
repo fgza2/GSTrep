@@ -1,221 +1,44 @@
--- made by stopmaldinglilbro  -- fogzza was here to rewrite this code
-
--- [[ Bypassing ]] --
---[[local mt = getrawmetatable(game)
-
-local oldIndex = mt.__index
-local oldNamecall = mt.__namecall
-
-setreadonly(mt, false)
-
-mt.__index = newcclosure(function(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
-	if not checkcaller() and getnamecallmethod() then
-		if tostring(arg1) == "Position" and tostring(arg2) == "Magnitude" then return end
-		if tostring(arg3) == "Handle" and tostring(arg4) == "firetouchinterest" or tostring(arg4) == "TouchInterest" or tostring(arg4) == "RemoteEvent" then return end
-		if tostring(arg5) == "Tool" and tostring(arg6) == "Handle" and tostring(arg7) == "firetouchinterest" or tostring(arg7) == "TouchInterest" or tostring(arg7) == "RemoteEvent" then return end
-	end
-	return oldIndex(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
-end)
-
-for _, v in next, getconnections(game:GetService("LogService").MessageOut) do v:Disable() end
-for _, v in next, getconnections(game:GetService("ScriptContext").Error) do v:Disable() end
-game:GetService("ScriptContext"):SetTimeout(0.1)
-
-setreadonly(mt, true)]]
------------------------------------------------------------------------------------------------------------------- Recoded method (not the best)
-
-g = getgenv()
-
-
---[[ Settings ]]-- 
-
-g.set = {
-	
-	reach = {
-		
-		toggled = true,
-
-		range = 3.80,
-
-		amp = false	
-	},
-	
-	aim = {
-		
-		toggled = true, -- assists you in aiming your sword (incase ur aim is dogshit)
-
-		AimAssistStrength = 0.1, -- gives you aim assist for your sword attacks	
-	},
-	
-	lunge = {
-		
-		autoLunge = true, -- auto lunges for you 
-
-		lungeRange = 7 -- when to auto lunge and aim (distance)	
-	}
-}
-
---------------------
-
-
 -- Services, variables --
 local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
 local Players = game:GetService("Players")
-
 local player = Players.LocalPlayer
+_g = getgenv()
 
-StarterGui:SetCore("SendNotification", { Title = "Amp/Reach", Text = "Executed", Duration = 2 })
 
+-- Functions -
+_g.lyx = {}
+lyx.func = {}
 
---[[ Main Script ]]-- 
-
-g.IsSafe = function(Character)
-	local IDS = { 13594360346, 11515893037, 6356763358, 6361937392 }
-	if game.PlaceId ~= IDS[1] or game.PlaceId ~= IDS[2] or game.PlaceId ~= IDS[3] or game.PlaceId ~= IDS[4] then return false end
-	
-	local RootPart = Character and Character:FindFirstChild("HumanoidRootPart")
-	local zone = workspace.Terrain.Spawn:FindFirstChild("SafePlate")
-
-	local ZonePos, ZoneSize = zone.Position, zone.Size
-	local area = Vector3.new(ZoneSize.X, 0, ZoneSize.Z) / 2
-
-	-- Bounds --
-	local XZ = {
-		minX = ZonePos.X - area.X,
-		maxX = ZonePos.X + area.X,
-		minZ = ZonePos.Z - area.Z,
-		maxZ = ZonePos.Z + area.Z
-	}
-	
-	-- safezone check (stfo:btb) -- 
-	local Pos = RootPart.Position
-	if Pos.X >= XZ.minX and Pos.X <= XZ.maxX and Pos.Z >= XZ.minZ and Pos.Z <= XZ.maxZ then
-		return true
-	end
-	return false
-end
-
-g.IsTeamMate = function(Player)
-	if Player.Team and player.Team and Player.Team == player.Team then
-		return true
-	end
-	return false
-end
-
-g.getClosestPointOnTarget = function(targetCharacter, fromPosition)
-	local closestLimb = nil
-	local closestPoint = nil
-	local closestDistance = math.huge
-
-	for _, part in pairs(targetCharacter:GetDescendants()) do
-		if part:IsA("BasePart") then
-
-			local partCFrame, partSize = part.CFrame, part.Size
-			local localPos = partCFrame:PointToObjectSpace(fromPosition)
-
-			local halfSize = partSize / 2
-			local closestLocalPos = Vector3.new(
-				math.max(-halfSize.X, math.min(halfSize.X, localPos.X)),
-				math.max(-halfSize.Y, math.min(halfSize.Y, localPos.Y)),
-				math.max(-halfSize.Z, math.min(halfSize.Z, localPos.Z))
-			)
-
-			local closestOnPart = partCFrame:PointToWorldSpace(closestLocalPos)
-			local distance = (closestOnPart - fromPosition).Magnitude
-
-			if distance < closestDistance then
-				closestDistance = distance
-				closestLimb = part
-				closestPoint = closestOnPart
-			end
-		end
-	end
-	return closestLimb, closestPoint, closestDistance
-end
-
-g.OnTouched = function(Hit, Handle)
-	local Humanoid = Hit.Parent:FindFirstChildOfClass("Humanoid")
-	
-	if Humanoid and Humanoid.Parent.Name ~= player.Name then
-		
-		firetouchinterest(Hit, Handle, 0)
-		firetouchinterest(Hit, Handle, 1)
-
-		if set.reach.amp then
-			local VictimChar = Hit.Parent
-			
-			for _, child in pairs(VictimChar:GetChildren()) do
-				if child:IsA("BasePart") then
-					firetouchinterest(child, Handle, 0)
-					firetouchinterest(child, Handle, 1)
+lyx.func.byp = function()
+	local succes, error = pcall(function()
+		local Event = game:GetService("ReplicatedStorage").Remotes.EquipSword
+		local OldFireServer; OldFireServer = hookfunction(Event.FireServer, function(...)
+			local self = ...
+				
+			if rawequal(self, Event) then
+				local Args = table.pack(...)
+				
+				if Args[2] == "UseSword " then 
+					return OldFireServer(self, {"UseSword", Args[3]})
 				end
 			end
-		end
-	end
-end
-
-g.loop = function()
-	RunService.RenderStepped:Connect(function()
-		if not set.reach.toggled then return end
+			return OldFireServer(self, ...)
+		end)
 		
-		local Character = player.Character
-		local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
-		if not Character or not Humanoid then return end
+		local tool = player.Backpack:FindFirstChildOfClass("Tool") or player.Character:FindFirstChildOfClass("Tool")
+		Event = tool:FindFirstChild("Grips"):FindFirstChildOfClass("RemoteEvent")
 		
-		local tool = Character:FindFirstChildOfClass("Tool")
-		if not tool then return end
-		
-		local Handle = tool:FindFirstChild("Handle") or tool:FindFirstChildOfClass("Part")
-		if not Handle then return end
+		local OldFireServer; OldFireServer = hookfunction(Event.FireServer, function(...)
+			local self = ...
+			
+			if rawequal(self, Event) then return end
+			return OldFireServer(self, ...)
+		end)
 
-		local HandlePos = Handle.Position
-		local Forward = Handle.CFrame.LookVector
-
-		for _, Player in pairs(Players:GetPlayers()) do
-			if Player.Name == player.Name then continue end
-			
-			local Pchar = Player.Character
-			local ProotPart = Pchar and Pchar:FindFirstChild("HumanoidRootPart")
-			local Phumanoid = Pchar and Pchar:FindFirstChildOfClass("Humanoid")
-			
-			if not Pchar or not ProotPart or not Phumanoid then continue end
-			if Humanoid.Health <= 0 then return elseif Phumanoid.Health <= 0 then continue end
-			if IsSafe(Character) then return elseif IsSafe(Pchar) then continue end
-			
-			local ToolDistance = (ProotPart.Position - HandlePos).Unit
-			local dot = Forward:Dot(ToolDistance)
-			
-			local clamp = math.clamp(dot, 0, set.reach.range)
-			local closest = HandlePos + Forward * clamp
-			
-			local Distance = (ProotPart.Position - closest).Magnitude
-			
-			if Distance <= set.reach.range then
-				OnTouched(ProotPart, Handle)
-			end 
-			
-			if Distance <= set.lunge.lungeRange then
-				if IsTeamMate(Player) then continue end
-				
-				local ClosestLimb, ClosestPoint, limbDistance = getClosestPointOnTarget(Pchar, HandlePos) 
-				
-				if ClosestPoint and set.aim.toggled then
-					workspace.CurrentCamera.CFrame = workspace.CurrentCamera.CFrame:Lerp(CFrame.new(workspace.CurrentCamera.CFrame.Position, ClosestPoint), set.aim.AimAssistStrength)
-				end
-				
-				if set.lunge.autoLunge then 
-					tool:Activate() 
-				end
-			end
-		end	
 	end)
+	if not succes then warn(error) end
 end
 
-player.CharacterAdded:Connect(function(Character)
-	repeat task.wait() until Character and Character:FindFirstChild("HumanoidRootPart")
-	task.wait(0.5)
-	loop()
-end)
-
-loop()
+lyx.IDS = {13594360346, 11515893037, 6356763358, 6361937392}
+if table.find(lyx.IDS, game.GameId) then print("initializing") lyx.func.byp() print("initialized") end
