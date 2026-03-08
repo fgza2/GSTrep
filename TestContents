@@ -41,4 +41,4 @@ lyx.func.byp = function()
 end
 
 lyx.IDS = {13594360346, 11515893037, 6356763358, 6361937392}
-if table.find(lyx.IDS, game.GameId) then print("initializing") lyx.func.byp() print("initialized") end
+if table.find(lyx.IDS, game.PlaceId) then print("initializing") lyx.func.byp() print("initialized") end
