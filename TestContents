@@ -94,7 +94,7 @@ _g.loop = function()
 				for _, child in pairs(Pchar:GetChildren()) do
 					if child:IsA("BasePart") and child.Name ~= "HumanoidRootPart" or child.Name ~= "Torso" then
 						Handle:BreakJoints()
-						Handle.CFrame = CFrame.new(child.Position, Handle.Position)
+						Handle.CFrame = child.CFrame
 					end
 				end
 			end
