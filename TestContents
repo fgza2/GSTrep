@@ -66,11 +66,15 @@ _g.loop = function()
 		if not Character or not Humanoid or not rootPart then return end
 
 		local tool = Character:FindFirstChildOfClass("Tool")
-		if not tool then return end
+		if not tool or tool.Name == "spoofed sword" then return end
 		
-		local spoofedTool = tool:Clone()
-		spoofedTool.Name = "spoofed sword"
-		spoofedTool.Parent = tool.Parent
+		local ToolSpoofed = Character:FindFirstChild("spoofed sword") or player.Backpack:FindFirstChild("spoofed sword")
+		
+		if not ToolSpoofed then
+			local spoofedTool = tool:Clone()
+			spoofedTool.Name = "spoofed sword"
+			spoofedTool.Parent = tool.Parent
+		end
 		
 		local Handle = tool:FindFirstChild("Handle") or tool:FindFirstChildOfClass("Part")
 		if not Handle then return end
