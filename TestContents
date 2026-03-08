@@ -5,6 +5,7 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 _g = getgenv()
 
+StarterGui:SetCore("SendNotification", { Title = "hax", Text = "Executed", Duration = 2 })
 
 -- Functions -
 _g.lyx = {}
@@ -71,6 +72,8 @@ _g.Tank = function()
 		end
 
 		for _, Player in pairs(Players:GetPlayers()) do
+			if Player.Name == player.Name then continue end
+			
 			local qCharacter = Player.Character
 			if not qCharacter then continue end
 
