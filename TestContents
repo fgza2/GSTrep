@@ -9,14 +9,14 @@ g.set = {
 
 		toggled = true, -- reach toggle 
 
-		range = 5, -- reach range
+		range = 30, -- reach range
 
-		amp = false	-- damage
+		amp = true	-- damage
 	},
 
 	lunge = {
 
-		autoLunge = false,
+		autoLunge = true,
 
 		lungeRange = 7
 	}
